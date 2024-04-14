@@ -3,7 +3,7 @@ const parseQuery = require('../../src/queryParser');
 const executeSELECTQuery = require('../../src/index');
 
 test('Read CSV File', async () => {
-    const data = await readCSV('./sample.csv');
+    const data = await readCSV('./student.csv');
     expect(data.length).toBeGreaterThan(0);
     expect(data.length).toBe(3);
     expect(data[0].name).toBe('John');
@@ -16,13 +16,15 @@ test('Parse SQL Query', () => {
     expect(parsed).toEqual({
         fields: ['id', 'name'],
         table: 'sample',
+        joinCondition: null,
+        joinTable: null,
         whereClauses:[]
         
     });
 });
 
 test('Execute SQL Query', async () => {
-    const query = 'SELECT id, name FROM sample';
+    const query = 'SELECT id, name FROM student';
     const result = await executeSELECTQuery(query);
     expect(result.length).toBeGreaterThan(0);
     expect(result[0]).toHaveProperty('id');
@@ -32,11 +34,13 @@ test('Execute SQL Query', async () => {
 });
 
 test('Parse SQL Query with WHERE Clause', () => {
-    const query = 'SELECT id, name FROM sample WHERE age = 25';
+    const query = 'SELECT id, name FROM student WHERE age = 25';
     const parsed = parseQuery(query);
     expect(parsed).toEqual({
         fields: ['id', 'name'],
-        table: 'sample',
+        joinCondition: null,
+        joinTable: null,
+        table: 'student',
         whereClauses: [
             {
                 field: 'age',
@@ -48,7 +52,7 @@ test('Parse SQL Query with WHERE Clause', () => {
 });
 
 test('Execute SQL Query with WHERE Clause', async () => {
-    const query = 'SELECT id, name FROM sample WHERE age = 25';
+    const query = 'SELECT id, name FROM student WHERE age = 25';
     const result = await executeSELECTQuery(query);
     expect(result.length).toBe(1);
     expect(result[0]).toHaveProperty('id');
